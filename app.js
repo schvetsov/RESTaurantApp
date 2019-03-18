@@ -14,10 +14,12 @@ app.get('/yelp', (req, res) => {
     'use strict';
 
     client.search({
-      term:'Italian',
+      term: req.query.input,
       // location:'jacksonville, fl',
       latitude: req.query.latitude,
       longitude: req.query.longitude
+      // latitude: 30.3252846,
+      // longitude: -81.6637657
     })
     // .then(response => {
       // color = response.jsonBody.businesses
@@ -44,6 +46,7 @@ app.get('/directions', (req, res) => {
 
   googleMapsClient.directions({
     origin:[req.query.origLat,req.query.origLong],
+    // origin:[30.3252846,-81.6637657],
     destination:[req.query.destLat,req.query.destLong],
     // origin:[30.2915584,-81.5218688],
     // destination:[30.34649,-81.52478]
