@@ -42,7 +42,7 @@ class App extends Component {
     this.dispatch(event.target.value)
   }
 
-  componentWillMount() {
+  componentDidMount() {
 
     var getPosition = function (options) {
       return new Promise(function (resolve, reject) {
