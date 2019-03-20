@@ -2,104 +2,111 @@ import React, { Component } from 'react';
 import './App.css';
 import axios from 'axios';
 import Container from './components/container';
+import { connect } from 'react-redux';
 
 class App extends Component {
   constructor() {
     super();
-    this.state = {
-      input: '',
-      result: [],
-      lat: [],
-      lon: [],
-      distance: [],
-      location: [],
-      rating: [],
-      reviews: [],
-      phone: [],
-      result2: 'hi',
-      test: [1,2,3,4],
-      initialPosition: 0,
-      lastPosition: 0
-    };
+    this.state = {};
     this.doSearch = this.doSearch.bind(this);
-    this.getLocation = this.getLocation.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
 
+  dispatch = (value) => {
+    this.props.dispatch({ type: "CHANGEINPUT", value: value })
+  };
 
-handleChange(event) {
-  this.setState({input: event.target.value});
-}
+  dispatch1 = (value) => {
+    value = {
+      value1: value.latitude,
+      value2: value.longitude
+    }
+    this.props.dispatch({ type: "GEOLOCATION", value: value })
+  };
 
-componentWillMount() {
+  dispatch2 = (value) => {
+    value = {
+      result: value.result,
+      lat: value.lat,
+      lon: value.lon,
+      location: value.location,
+      distance: value.distance,
+      rating: value.rating,
+      reviews: value.reviews,
+      phone: value.phone
+    }
+    this.props.dispatch({ type: "YELPRESPONSE", value: value })
+  };
 
-  var getPosition = function (options) {
-    return new Promise(function (resolve, reject) {
-      navigator.geolocation.getCurrentPosition(resolve, reject, options);
-    });
+  handleChange(event) {
+    this.dispatch(event.target.value)
   }
-  
-  getPosition()
-    .then((position) => {
-      var crd = position.coords;
-      this.setState({
-        initialPosition: crd.latitude,
-        lastPosition: crd.longitude
+
+  componentWillMount() {
+
+    var getPosition = function (options) {
+      return new Promise(function (resolve, reject) {
+        navigator.geolocation.getCurrentPosition(resolve, reject, options);
+      });
+    }
+    
+    getPosition()
+      .then((position) => {
+        var crd = position.coords;
+        this.dispatch1(crd)
+
       })
+      .catch((err) => {
+        console.error(err.message);
+      });
+  }
+
+  doSearch() {
+
+    let result2= [];
+    let lat = [];
+    let lon = [];
+    let location = [];
+    let dist = [];
+    let rating = [];
+    let reviews = [];
+    let phone = [];
+
+    axios.get('/yelp', {
+      params: {
+        input: this.props.input,
+        latitude: this.props.origLat,
+        longitude: this.props.origLong
+      }
     })
-    .catch((err) => {
-      console.error(err.message);
-    });
-
-    // axios.get('/yelp')
-    // .then(res => console.log(res.data.color))
-    // .catch(err => console.log(err));
-}
-
-doSearch() {
-let result2= [];
-let lat = [];
-let lon = [];
-let location = [];
-let dist = [];
-let rating = [];
-let reviews = [];
-let phone = [];
-  axios.get('/yelp', {
-    params: {
-      input: this.state.input,
-      latitude: this.state.initialPosition,
-      longitude: this.state.lastPosition
-    }
-  })
-  .then(res => {
-    for (let i=0; i<res.data.color.length; i++) {
-      result2.push(res.data.color[i].name);
-    }
-    for (let i=0; i<res.data.color.length; i++) {
-      lat.push(res.data.color[i].coordinates.latitude);
-    }
-    for (let i=0; i<res.data.color.length; i++) {
-      lon.push(res.data.color[i].coordinates.longitude);
-    }
-    for (let i=0; i<res.data.color.length; i++) {
-      location.push(res.data.color[i].location.display_address[0]);
-    }
-    for (let i=0; i<res.data.color.length; i++) {
-      rating.push(res.data.color[i].rating);
-    }
-    for (let i=0; i<res.data.color.length; i++) {
-      reviews.push(res.data.color[i].review_count);
-    }
-    for (let i=0; i<res.data.color.length; i++) {
-      phone.push(res.data.color[i].phone);
-    }
-    for (let i=0; i<res.data.color.length; i++) {
-      dist.push(res.data.color[i].distance);
-    }
-  })
-    .then(res =>
-      {this.setState({
+    .then(res => {
+      for (let i=0; i<res.data.color.length; i++) {
+        result2.push(res.data.color[i].name);
+      }
+      for (let i=0; i<res.data.color.length; i++) {
+        lat.push(res.data.color[i].coordinates.latitude);
+      }
+      for (let i=0; i<res.data.color.length; i++) {
+        lon.push(res.data.color[i].coordinates.longitude);
+      }
+      for (let i=0; i<res.data.color.length; i++) {
+        location.push(res.data.color[i].location.display_address[0]);
+      }
+      for (let i=0; i<res.data.color.length; i++) {
+        rating.push(res.data.color[i].rating);
+      }
+      for (let i=0; i<res.data.color.length; i++) {
+        reviews.push(res.data.color[i].review_count);
+      }
+      for (let i=0; i<res.data.color.length; i++) {
+        phone.push(res.data.color[i].phone);
+      }
+      for (let i=0; i<res.data.color.length; i++) {
+        dist.push(res.data.color[i].distance);
+      }
+    })
+    .then(res => {
+      let value = {
         result: result2,
         lat: lat,
         lon: lon,
@@ -108,50 +115,32 @@ let phone = [];
         rating: rating,
         reviews: reviews,
         phone: phone
-      })})
-  .catch(err => console.log(err))
-}
-
-getLocation() {
-
-  var getPosition = function (options) {
-    return new Promise(function (resolve, reject) {
-      navigator.geolocation.getCurrentPosition(resolve, reject, options);
-    });
-  }
-  
-  getPosition()
-    .then((position) => {
-      console.log(position);
-      var crd = position.coords;
-      this.setState({
-        initialPosition: crd.latitude,
-        lastPosition: crd.longitude
-      })
+      }
+      this.dispatch2(value)
     })
-    .catch((err) => {
-      console.error(err.message);
-    });
-
-}
+    .catch(err => console.log(err))
+  }
 
   render() {
-    const items = this.state.result.map((_,i) => <Container key={i + 1}
-      number={i}
-      result={this.state.result}
-      origLat={this.state.initialPosition}
-      origLong={this.state.lastPosition}
-      latitude={this.state.lat}
-      longitude={this.state.lon}
-      distance={this.state.distance}
-      location={this.state.location}
-      rating={this.state.rating}
-      reviews={this.state.reviews}
-      phone={this.state.phone}
+
+    const items = this.props.result.map((_,i) => 
+      <Container key={i + 1}
+        number={i}
+        result={this.props.result}
+        origLat={this.props.origLat}
+        origLong={this.props.origLong}
+        latitude={this.props.lat}
+        longitude={this.props.lon}
+        distance={this.props.distance}
+        location={this.props.location}
+        rating={this.props.rating}
+        reviews={this.props.reviews}
+        phone={this.props.phone}
       />)
-    return (
+
+    return ( 
       <div className="App">
-        <input type="text" value={this.state.input} onChange={this.handleChange}></input>
+        <input type="text" value={this.props.input} onChange={this.handleChange}></input>
         <button onClick={this.doSearch}>Search</button>
         <div className="flex-container">
           <div className="name">Name</div>
@@ -163,12 +152,24 @@ getLocation() {
           <div className="location">Directions</div>
         </div>
         {items}
-
       </div>
     );
   }
 }
 
-export default App;
+const mapStateToProps = (state) => ({
+  input: state.input,
+  origLat: state.origLat,
+  origLong: state.origLong,
+  result: state.result,
+  lat: state.lat,
+  lon: state.lon,
+  location: state.location,
+  distance: state.distance,
+  rating: state.rating,
+  reviews: state.reviews,
+  phone: state.phone,
+  instructions: state.instructions
+})
 
-
+export default connect(mapStateToProps)(App);
