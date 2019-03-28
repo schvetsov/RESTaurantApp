@@ -12,6 +12,7 @@ const initialState = {
     origLong: 0,
     result: [],
     selected: '',
+    index: 0,
     directions: []
 };
 
@@ -28,11 +29,13 @@ function reducer(state = initialState, action) {
             })
         case "YELPRESPONSE":
             return Object.assign({}, state, {
-                result: action.value
+                result: action.value.data,
+                directions: action.value.directions
             })
         case "SELECTED":
             return Object.assign({}, state, {
-                selected: action.value
+                selected: action.value.data,
+                index: action.value.index
             })
         case "DIRECTIONS":
         return Object.assign({}, state, {

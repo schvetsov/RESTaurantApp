@@ -37,7 +37,11 @@ class App extends Component {
   };
 
   dispatch4 = (value) => {
-    this.props.dispatch({ type: "SELECTED", value: value })
+    const val = {
+      data: this.props.result[value],
+      index: value
+    }
+    this.props.dispatch({ type: "SELECTED", value: val })
   };
 
   //Update state for text input
@@ -75,18 +79,26 @@ class App extends Component {
       }
     })
     .then(res => {
-      console.log(res.data.color);
-      this.dispatch2(res.data.color);
-      console.log(this.props.result);
+      let directions = [];
+      for(let i = 0; i < res.data.color.length; i++) {
+        directions.push('');
+      }
+      const value = {
+        data: res.data.color,
+        directions: directions
+      }
+      this.dispatch2(value);
+      // console.log(this.props.result);
+      console.log(this.props.directions)
     })
     .catch(err => console.log(err))
 
   }
 
   getInfo(value) {
-    console.log(this.props.result[value])
-    this.dispatch4(this.props.result[value])
-    // console.log(this.props.selected)
+    // console.log(value)
+    this.dispatch4(value)
+    // console.log(this.props.index)
   }
 
   //Get directions from Google Directions API
@@ -102,12 +114,14 @@ class App extends Component {
       }
     })
     .then(res => { console.log(res)
-      for (let i=0; i<res.data.directions[0].legs[0].steps.length; i++) {
-        let data = res.data.directions[0].legs[0].steps[i].html_instructions + '---' + 
-          res.data.directions[0].legs[0].steps[i].distance.text + '---' + 
-          res.data.directions[0].legs[0].steps[i].duration.text;
+      let result = res.data.directions[0].legs[0];
+      for (let i = 0; i < result.steps.length; i++) {
+        let data = result.steps[i].html_instructions + '---' + 
+          result.steps[i].distance.text + '---' + 
+          result.steps[i].duration.text;
         directions.push(data)
       }
+      console.log(directions);
       this.dispatch3(directions)
       console.log(this.props.directions);
     })
@@ -117,7 +131,7 @@ class App extends Component {
   }
 
   render() {
-    
+    // console.log(this.props.index)
     const items = this.props.result.map((_,i) => 
       <SmallCard
         key={i + 1}
@@ -140,6 +154,7 @@ class App extends Component {
         {this.props.selected ?
           <BigCard 
             selected={this.props.selected}
+            index={this.props.index}
             getDirections={this.getDirections}
             directions={this.props.directions}
           />
@@ -157,6 +172,7 @@ const mapStateToProps = (state) => ({
   origLong: state.origLong,
   result: state.result,
   selected: state.selected,
+  index: state.index,
   directions: state.directions
 })
 
