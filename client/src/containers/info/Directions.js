@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import '../App.css';
+import '../../App.css';
 
-class BigCard extends Component {
+class Directions extends Component {
 
     render() {
         const items = this.props.directions.map((_, i) => 
@@ -11,7 +11,7 @@ class BigCard extends Component {
             />
         )
         return (
-            <div className="bigCard">
+            <div>
                 {items}
             </div>
         )
@@ -19,4 +19,4 @@ class BigCard extends Component {
 
 }
 
-export default BigCard;
+export default Directions;

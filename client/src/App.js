@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import axios from 'axios';
 import SmallCard from './containers/SmallCard';
-import BigCard from './containers/BigCard';
+import BigCard from './containers/info/BigCard';
 import { connect } from 'react-redux';
 
 class App extends Component {
@@ -11,6 +11,8 @@ class App extends Component {
     this.state = {};
     this.doSearch = this.doSearch.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.getDirections = this.getDirections.bind(this);
+    this.getInfo = this.getInfo.bind(this);
     this.getDirections = this.getDirections.bind(this);
   }
 
@@ -34,6 +36,10 @@ class App extends Component {
     this.props.dispatch({ type: "DIRECTIONS", value: value })
   };
 
+  dispatch4 = (value) => {
+    this.props.dispatch({ type: "SELECTED", value: value })
+  };
+
   //Update state for text input
   handleChange(event) {
     this.dispatch(event.target.value)
@@ -48,15 +54,14 @@ class App extends Component {
       });
     }
     
-    getPosition()
-      .then((position) => {
-        this.dispatch1(position.coords)
-        // console.log(crd);
-      })
-      .catch((err) => {
-        console.error(err.message);
-      });
-
+  getPosition()
+    .then((position) => {
+      this.dispatch1(position.coords)
+      // console.log(crd);
+    })
+    .catch((err) => {
+      console.error(err.message);
+    });
   }
 
   //Do the search on Yelp
@@ -78,31 +83,38 @@ class App extends Component {
 
   }
 
+  getInfo(value) {
+    console.log(this.props.result[value])
+    this.dispatch4(this.props.result[value])
+    // console.log(this.props.selected)
+  }
+
   //Get directions from Google Directions API
   getDirections(value) {
-    let instructions = [];
-      axios.get('/directions', {
-        params: {
-          origLat: this.props.origLat,
-          origLong: this.props.origLong,
-          destLat: this.props.result[value].coordinates.latitude,
-          destLong: this.props.result[value].coordinates.longitude
-        }
-      })
-      .then(res => { console.log(res)
-        for (let i=0; i<res.data.directions[0].legs[0].steps.length; i++) {
-          let data = res.data.directions[0].legs[0].steps[i].html_instructions + '---' + 
-            res.data.directions[0].legs[0].steps[i].distance.text + '---' + 
-            res.data.directions[0].legs[0].steps[i].duration.text;
-          instructions.push(data)
-        }
-        this.dispatch3(instructions)
-        console.log(this.props.instructions);
-      })
-      .catch(err => {
-        console.log(err)
-      })
-    }
+
+    let directions = [];
+    axios.get('/directions', {
+      params: {
+        origLat: this.props.origLat,
+        origLong: this.props.origLong,
+        destLat: value.latitude,
+        destLong: value.longitude
+      }
+    })
+    .then(res => { console.log(res)
+      for (let i=0; i<res.data.directions[0].legs[0].steps.length; i++) {
+        let data = res.data.directions[0].legs[0].steps[i].html_instructions + '---' + 
+          res.data.directions[0].legs[0].steps[i].distance.text + '---' + 
+          res.data.directions[0].legs[0].steps[i].duration.text;
+        directions.push(data)
+      }
+      this.dispatch3(directions)
+      console.log(this.props.directions);
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  }
 
   render() {
     
@@ -113,19 +125,27 @@ class App extends Component {
         result={this.props.result[i]}
         origLat={this.props.origLat}
         origLong={this.props.origLong}
-        getDirections={this.getDirections}
+        getInfo={this.getInfo}
       />)
 
     return ( 
       <div className="App">
-        <div className="search">
-          <input type="text" value={this.props.input} onChange={this.handleChange}></input>
-          <button onClick={this.doSearch}>Search</button>
+        <div className="left-screen">
+          <div className="search">
+            <input type="text" value={this.props.input} onChange={this.handleChange}></input>
+            <button onClick={this.doSearch}>Search</button>
+          </div>
+          <div className="actors-list">{items}</div>
         </div>
-        <div className="actors-list">{items}</div>
-        <BigCard 
-          directions={this.props.instructions}
-        />
+        {this.props.selected ?
+          <BigCard 
+            selected={this.props.selected}
+            getDirections={this.getDirections}
+            directions={this.props.directions}
+          />
+        :
+          <div></div>
+        }
       </div>
     );
   }
@@ -136,7 +156,8 @@ const mapStateToProps = (state) => ({
   origLat: state.origLat,
   origLong: state.origLong,
   result: state.result,
-  instructions: state.instructions
+  selected: state.selected,
+  directions: state.directions
 })
 
 export default connect(mapStateToProps)(App);

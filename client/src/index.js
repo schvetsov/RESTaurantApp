@@ -10,15 +10,9 @@ const initialState = {
     input: '',
     origLat: 0,
     origLong: 0,
-    result: [1, 2],
-    // lat: [],
-    // lon: [],
-    // location: [],
-    // distance: [],
-    // rating: [],
-    // reviews: [],
-    // phone: [],
-    instructions: []
+    result: [],
+    selected: '',
+    directions: []
 };
 
 function reducer(state = initialState, action) {
@@ -34,18 +28,15 @@ function reducer(state = initialState, action) {
             })
         case "YELPRESPONSE":
             return Object.assign({}, state, {
-                result: action.value,
-                // lat: action.value.lat,
-                // lon: action.value.lon,
-                // location: action.value.location,
-                // distance: action.value.distance,
-                // rating: action.value.rating,
-                // reviews: action.value.reviews,
-                // phone: action.value.phone
+                result: action.value
+            })
+        case "SELECTED":
+            return Object.assign({}, state, {
+                selected: action.value
             })
         case "DIRECTIONS":
         return Object.assign({}, state, {
-                instructions: action.value
+                directions: action.value
             })
         default:
             return state;
