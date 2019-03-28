@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import './App.css';
 import axios from 'axios';
-import Container from './components/container';
+import SmallCard from './containers/SmallCard';
+import BigCard from './containers/BigCard';
 import { connect } from 'react-redux';
 
 class App extends Component {
@@ -10,6 +11,7 @@ class App extends Component {
     this.state = {};
     this.doSearch = this.doSearch.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.getDirections = this.getDirections.bind(this);
   }
 
   dispatch = (value) => {
@@ -25,23 +27,19 @@ class App extends Component {
   };
 
   dispatch2 = (value) => {
-    value = {
-      result: value.result,
-      lat: value.lat,
-      lon: value.lon,
-      location: value.location,
-      distance: value.distance,
-      rating: value.rating,
-      reviews: value.reviews,
-      phone: value.phone
-    }
     this.props.dispatch({ type: "YELPRESPONSE", value: value })
   };
 
+  dispatch3 = (value) => {
+    this.props.dispatch({ type: "DIRECTIONS", value: value })
+  };
+
+  //Update state for text input
   handleChange(event) {
     this.dispatch(event.target.value)
   }
 
+  //Get user coordinates when app loads
   componentDidMount() {
 
     var getPosition = function (options) {
@@ -52,25 +50,17 @@ class App extends Component {
     
     getPosition()
       .then((position) => {
-        var crd = position.coords;
-        this.dispatch1(crd)
-
+        this.dispatch1(position.coords)
+        // console.log(crd);
       })
       .catch((err) => {
         console.error(err.message);
       });
+
   }
 
+  //Do the search on Yelp
   doSearch() {
-
-    let result2= [];
-    let lat = [];
-    let lon = [];
-    let location = [];
-    let dist = [];
-    let rating = [];
-    let reviews = [];
-    let phone = [];
 
     axios.get('/yelp', {
       params: {
@@ -80,78 +70,62 @@ class App extends Component {
       }
     })
     .then(res => {
-      for (let i=0; i<res.data.color.length; i++) {
-        result2.push(res.data.color[i].name);
-      }
-      for (let i=0; i<res.data.color.length; i++) {
-        lat.push(res.data.color[i].coordinates.latitude);
-      }
-      for (let i=0; i<res.data.color.length; i++) {
-        lon.push(res.data.color[i].coordinates.longitude);
-      }
-      for (let i=0; i<res.data.color.length; i++) {
-        location.push(res.data.color[i].location.display_address[0]);
-      }
-      for (let i=0; i<res.data.color.length; i++) {
-        rating.push(res.data.color[i].rating);
-      }
-      for (let i=0; i<res.data.color.length; i++) {
-        reviews.push(res.data.color[i].review_count);
-      }
-      for (let i=0; i<res.data.color.length; i++) {
-        phone.push(res.data.color[i].phone);
-      }
-      for (let i=0; i<res.data.color.length; i++) {
-        dist.push(res.data.color[i].distance);
-      }
-    })
-    .then(res => {
-      let value = {
-        result: result2,
-        lat: lat,
-        lon: lon,
-        location: location,
-        distance: dist,
-        rating: rating,
-        reviews: reviews,
-        phone: phone
-      }
-      this.dispatch2(value)
+      console.log(res.data.color);
+      this.dispatch2(res.data.color);
+      console.log(this.props.result);
     })
     .catch(err => console.log(err))
+
   }
 
-  render() {
+  //Get directions from Google Directions API
+  getDirections(value) {
+    let instructions = [];
+      axios.get('/directions', {
+        params: {
+          origLat: this.props.origLat,
+          origLong: this.props.origLong,
+          destLat: this.props.result[value].coordinates.latitude,
+          destLong: this.props.result[value].coordinates.longitude
+        }
+      })
+      .then(res => { console.log(res)
+        for (let i=0; i<res.data.directions[0].legs[0].steps.length; i++) {
+          let data = res.data.directions[0].legs[0].steps[i].html_instructions + '---' + 
+            res.data.directions[0].legs[0].steps[i].distance.text + '---' + 
+            res.data.directions[0].legs[0].steps[i].duration.text;
+          instructions.push(data)
+        }
+        this.dispatch3(instructions)
+        console.log(this.props.instructions);
+      })
+      .catch(err => {
+        console.log(err)
+      })
+    }
 
+  render() {
+    
     const items = this.props.result.map((_,i) => 
-      <Container key={i + 1}
+      <SmallCard
+        key={i + 1}
         number={i}
-        result={this.props.result}
+        result={this.props.result[i]}
         origLat={this.props.origLat}
         origLong={this.props.origLong}
-        latitude={this.props.lat}
-        longitude={this.props.lon}
-        distance={this.props.distance}
-        location={this.props.location}
-        rating={this.props.rating}
-        reviews={this.props.reviews}
-        phone={this.props.phone}
+        getDirections={this.getDirections}
       />)
 
     return ( 
       <div className="App">
-        <input type="text" value={this.props.input} onChange={this.handleChange}></input>
-        <button onClick={this.doSearch}>Search</button>
-        <div className="flex-container">
-          <div className="name">Name</div>
-          <div className="location">Location</div>
-          <div className="rating-review-distance">Rating</div>
-          <div className="rating-review-distance">Number of Reviews</div>
-          <div className="phone">Phone</div>
-          <div className="rating-review-distance">Distance in Miles</div>
-          <div className="location">Directions</div>
+        <div className="search">
+          <input type="text" value={this.props.input} onChange={this.handleChange}></input>
+          <button onClick={this.doSearch}>Search</button>
         </div>
-        {items}
+        <div className="actors-list">{items}</div>
+        <BigCard 
+          directions={this.props.instructions}
+        />
       </div>
     );
   }
@@ -162,13 +136,6 @@ const mapStateToProps = (state) => ({
   origLat: state.origLat,
   origLong: state.origLong,
   result: state.result,
-  lat: state.lat,
-  lon: state.lon,
-  location: state.location,
-  distance: state.distance,
-  rating: state.rating,
-  reviews: state.reviews,
-  phone: state.phone,
   instructions: state.instructions
 })
 
