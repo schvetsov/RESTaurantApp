@@ -19,6 +19,10 @@ https://developers.google.com
 
 8. Go into /client and 'npm start'
 
+9. Type your favorite type of food into the text field, and click 'Search'.
+
+10. Click on the restaurant names on the left to load more details and an image from the restaurant. Click 'Directions' on the bottom right to get the directions from your current location to the restaurant.
+
 ## What you should see
 
 
