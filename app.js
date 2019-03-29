@@ -7,16 +7,14 @@ const googleMapsClient = require('@google/maps').createClient({
   key: googleKey,
   Promise: Promise
 });
-// color = '';
-// directions = '';
 
 app.get('/yelp', (req, res) => {
     'use strict';
 
     client.search({
       term: req.query.input,
-      latitude: req.query.latitude,
-      longitude: req.query.longitude
+      latitude: req.query.origLat,
+      longitude: req.query.origLong
     })
     .then(response => {
       res.status(200).send({

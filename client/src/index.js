@@ -29,8 +29,9 @@ function reducer(state = initialState, action) {
             })
         case "YELPRESPONSE":
             return Object.assign({}, state, {
+                selected: action.value.selected,
                 result: action.value.data,
-                directions: action.value.directions
+                directions: [ ...action.value.directions]
             })
         case "SELECTED":
             return Object.assign({}, state, {
@@ -38,8 +39,12 @@ function reducer(state = initialState, action) {
                 index: action.value.index
             })
         case "DIRECTIONS":
-        return Object.assign({}, state, {
-                directions: action.value
+            return Object.assign({}, state, {
+                directions: [
+                    ...action.value.directions.slice(0,action.value.index),
+                    action.value.directions[action.value.index] = action.value.directions[action.value.index],
+                    ...action.value.directions.slice(action.value.index + 1)
+                ]
             })
         default:
             return state;

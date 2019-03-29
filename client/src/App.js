@@ -6,6 +6,7 @@ import BigCard from './containers/info/BigCard';
 import { connect } from 'react-redux';
 
 class App extends Component {
+
   constructor() {
     super();
     this.state = {};
@@ -21,10 +22,6 @@ class App extends Component {
   };
 
   dispatch1 = (value) => {
-    value = {
-      value1: value.latitude,
-      value2: value.longitude
-    }
     this.props.dispatch({ type: "GEOLOCATION", value: value })
   };
 
@@ -37,11 +34,7 @@ class App extends Component {
   };
 
   dispatch4 = (value) => {
-    const val = {
-      data: this.props.result[value],
-      index: value
-    }
-    this.props.dispatch({ type: "SELECTED", value: val })
+    this.props.dispatch({ type: "SELECTED", value: value })
   };
 
   //Update state for text input
@@ -60,8 +53,11 @@ class App extends Component {
     
   getPosition()
     .then((position) => {
-      this.dispatch1(position.coords)
-      // console.log(crd);
+      const value = {
+        value1: position.coords.latitude,
+        value2: position.coords.longitude
+      }
+      this.dispatch1(value)
     })
     .catch((err) => {
       console.error(err.message);
@@ -70,41 +66,49 @@ class App extends Component {
 
   //Do the search on Yelp
   doSearch() {
-
     axios.get('/yelp', {
       params: {
         input: this.props.input,
-        latitude: this.props.origLat,
-        longitude: this.props.origLong
+        origLat: this.props.origLat,
+        origLong: this.props.origLong
       }
     })
     .then(res => {
       let directions = [];
       for(let i = 0; i < res.data.color.length; i++) {
-        directions.push('');
+        directions.push([]);
       }
       const value = {
+        selected: '',
         data: res.data.color,
         directions: directions
       }
       this.dispatch2(value);
-      // console.log(this.props.result);
-      console.log(this.props.directions)
+      console.log(this.props.result);
     })
     .catch(err => console.log(err))
 
   }
 
-  getInfo(value) {
-    // console.log(value)
+  getInfo(val) {
+    const value = {
+      data: this.props.result[val],
+      index: val
+    }
     this.dispatch4(value)
-    // console.log(this.props.index)
   }
 
   //Get directions from Google Directions API
   getDirections(value) {
 
-    let directions = [];
+    //If we already have directions, then abort
+    if(this.props.directions[this.props.index].length !== 0){
+      console.log("GET aborted");
+      return;
+    }
+
+    let directions = this.props.directions;
+    
     axios.get('/directions', {
       params: {
         origLat: this.props.origLat,
@@ -113,17 +117,20 @@ class App extends Component {
         destLong: value.longitude
       }
     })
-    .then(res => { console.log(res)
+    .then(res => {
       let result = res.data.directions[0].legs[0];
       for (let i = 0; i < result.steps.length; i++) {
         let data = result.steps[i].html_instructions + '---' + 
           result.steps[i].distance.text + '---' + 
           result.steps[i].duration.text;
-        directions.push(data)
+        directions[this.props.index].push(data)
       }
-      console.log(directions);
-      this.dispatch3(directions)
-      console.log(this.props.directions);
+      const value = {
+        directions: directions,
+        index: this.props.index
+      }
+      this.dispatch3(value)
+      console.log("GET request to Google accomplished");
     })
     .catch(err => {
       console.log(err)
@@ -131,7 +138,7 @@ class App extends Component {
   }
 
   render() {
-    // console.log(this.props.index)
+
     const items = this.props.result.map((_,i) => 
       <SmallCard
         key={i + 1}
@@ -151,6 +158,7 @@ class App extends Component {
           </div>
           <div className="actors-list">{items}</div>
         </div>
+
         {this.props.selected ?
           <BigCard 
             selected={this.props.selected}
@@ -161,6 +169,7 @@ class App extends Component {
         :
           <div></div>
         }
+
       </div>
     );
   }

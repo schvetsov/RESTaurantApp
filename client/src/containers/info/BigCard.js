@@ -24,11 +24,17 @@ class BigCard extends Component {
                 <div>Address: {address}</div>
                 <div>Type: {this.props.selected.categories[0].title}</div>
                 <button onClick={() => this.props.getDirections(this.props.selected.coordinates)}>Directions</button>
-                <Directions 
-                    selected={this.props.selected}
-                    index={this.props.index}
-                    directions={this.props.directions}
-                />
+                
+                {this.props.directions[this.props.index].length !== 0 ?
+                    <Directions 
+                        selected={this.props.selected}
+                        index={this.props.index}
+                        directions={this.props.directions}
+                    />
+                :
+                    <div></div>
+                }
+
             </div>
         )
     }
