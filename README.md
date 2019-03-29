@@ -1,1 +1,1 @@
-<img style="width:200px" src={./screenshot.png}>
+[Image](screenshot.png)
