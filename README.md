@@ -19,6 +19,6 @@ https://developers.google.com
 
 8. Go into /client and 'npm start'
 
-##What you should see
+# What you should see
 
 ![Screenshot](screenshot.png)
