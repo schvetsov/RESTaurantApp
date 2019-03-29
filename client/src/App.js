@@ -66,7 +66,7 @@ class App extends Component {
 
   //Do the search on Yelp
   doSearch() {
-    axios.get('/yelp', {
+    axios.get('/yelp/yelp', {
       params: {
         input: this.props.input,
         origLat: this.props.origLat,
@@ -109,7 +109,7 @@ class App extends Component {
 
     let directions = this.props.directions;
     
-    axios.get('/directions', {
+    axios.get('/directions/directions', {
       params: {
         origLat: this.props.origLat,
         origLong: this.props.origLong,
