@@ -1,1 +1,1 @@
-<img src={./screenshot.png}>
+<img style="width:200px" src={./screenshot.png}>
