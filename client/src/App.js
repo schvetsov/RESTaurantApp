@@ -4,11 +4,112 @@ import axios from 'axios';
 import SmallCard from './containers/SmallCard';
 import BigCard from './containers/info/BigCard';
 import { connect } from 'react-redux';
+import Button from '@material-ui/core/Button';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import GridList from '@material-ui/core/GridList';
+import GridListTile from '@material-ui/core/GridListTile';
+import GridListTileBar from '@material-ui/core/GridListTileBar';
+import ListSubheader from '@material-ui/core/ListSubheader';
+import IconButton from '@material-ui/core/IconButton';
+import InfoIcon from '@material-ui/icons/Info';
+
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import InputBase from '@material-ui/core/InputBase';
+import { fade } from '@material-ui/core/styles/colorManipulator';
+import MenuIcon from '@material-ui/icons/Menu';
+import SearchIcon from '@material-ui/icons/Search';
+
+const styles = theme => ({
+  root1: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
+    overflow: 'hidden',
+    backgroundColor: theme.palette.background.paper,
+    //width: 400
+  },
+  gridList: {
+    width: 500,
+    height: '100vh'
+  },
+  icon: {
+    color: 'rgba(255, 255, 255, 0.54)',
+  },
+
+  button: {
+    margin: theme.spacing.unit
+  },
+
+
+  root: {
+    width: '100%'
+  },
+  grow: {
+    flexGrow: 1
+  },
+  menuButton: {
+    marginLeft: -12,
+    marginRight: 20
+  },
+  title: {
+    display: 'none',
+    [theme.breakpoints.up('sm')]: {
+      display: 'block',
+    }
+  },
+  search: {
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: fade(theme.palette.common.white, 0.15),
+    '&:hover': {
+      backgroundColor: fade(theme.palette.common.white, 0.25),
+    },
+    marginLeft: 0,
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      marginLeft: theme.spacing.unit,
+      width: 'auto',
+    }
+  },
+  searchIcon: {
+    width: theme.spacing.unit * 9,
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  inputRoot: {
+    color: 'inherit',
+    width: '100%',
+  },
+  inputInput: {
+    paddingTop: theme.spacing.unit,
+    paddingRight: theme.spacing.unit,
+    paddingBottom: theme.spacing.unit,
+    paddingLeft: theme.spacing.unit * 10,
+    transition: theme.transitions.create('width'),
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      width: 120,
+      '&:focus': {
+        width: 200,
+      },
+    },
+  },
+
+
+});
+
 
 class App extends Component {
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {};
     this.doSearch = this.doSearch.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -139,25 +240,65 @@ class App extends Component {
 
   render() {
 
-    const items = this.props.result.map((_,i) => 
-      <SmallCard
-        key={i + 1}
-        number={i}
-        result={this.props.result[i]}
-        origLat={this.props.origLat}
-        origLong={this.props.origLong}
-        getInfo={this.getInfo}
-      />)
+    const { classes } = this.props;
+    const items = this.props.result.map((_,i) => (
+      <GridListTile key={i} onClick={() => this.getInfo(i)}>
+        <img src={this.props.result[i].image_url} alt={""} />
+        <GridListTileBar
+          title={this.props.result[i].name} 
+          subtitle={this.props.result[i].categories[0].title}
+          actionIcon={
+            <IconButton className={classes.icon}>
+              <InfoIcon />
+            </IconButton>
+          }
+        />
+      </GridListTile>
+    ))
 
     return ( 
-      <div className="App">
-        <div className="left-screen">
-          <div className="search">
-            <input type="text" value={this.props.input} onChange={this.handleChange}></input>
-            <button onClick={this.doSearch}>Search</button>
-          </div>
-          <div className="actors-list">{items}</div>
+      <div>
+        <div className={classes.root}>
+          <AppBar position="static" style={{backgroundColor: "black"}}>
+            <Toolbar>
+              <IconButton className={classes.menuButton} color="inherit" aria-label="Open drawer">
+                <MenuIcon />
+              </IconButton>
+              <Typography className={classes.title} variant="h6" color="inherit" noWrap>
+                RESTaurant App
+              </Typography>
+              <div className={classes.grow} />
+              <div className={classes.search}>
+                <div className={classes.searchIcon}>
+                  <SearchIcon />
+                </div>
+                <InputBase
+                  placeholder={this.props.input}
+                  onChange={this.handleChange}
+                  classes={{
+                    root: classes.inputRoot,
+                    input: classes.inputInput,
+                  }}
+                />
+              </div>
+              <Button 
+                variant="contained" 
+                className={classes.button}
+                onClick={this.doSearch}
+              >
+                Search
+              </Button>
+            </Toolbar>
+          </AppBar>
         </div>
+
+        <div className={classes.root1}>
+          <GridList cellHeight={190} className={classes.gridList}>
+            <GridListTile key="Subheader" cols={2} style={{ height: 'auto' }}>
+            </GridListTile>
+            {items}
+          </GridList>
+        
 
         {this.props.selected ?
           <BigCard 
@@ -169,11 +310,15 @@ class App extends Component {
         :
           <div></div>
         }
-
+        </div>
       </div>
     );
   }
 }
+
+App.propTypes = {
+  classes: PropTypes.object.isRequired,
+};
 
 const mapStateToProps = (state) => ({
   input: state.input,
@@ -185,4 +330,4 @@ const mapStateToProps = (state) => ({
   directions: state.directions
 })
 
-export default connect(mapStateToProps)(App);
+export default withStyles(styles)(connect(mapStateToProps)(App));
