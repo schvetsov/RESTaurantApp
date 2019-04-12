@@ -1,3 +1,9 @@
+## Description
+
+Stack: React, Redux, Node, Express, Axios, Material-UI
+
+An app that gets your location coordinates, and allowes you to search for anything on Yelp in your local area. You can search for more than just restaurants, I just made the title for fun. You can then expand the box to the right and the app will generate the directions from your current area to the selected restaurant.
+
 ## How to use
 
 1. Clone repository
