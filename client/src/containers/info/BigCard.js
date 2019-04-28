@@ -53,7 +53,7 @@ class BigCard extends Component {
     state = { expanded: false };
 
     handleExpandClick = () => {
-      this.setState(state => ({ expanded: !state.expanded }), this.props.getDirections(this.props.selected.coordinates));
+      this.setState(state => ({ expanded: !state.expanded }), this.props.getDirections({...this.props}));
     };
 
     convertMiles() {
@@ -89,11 +89,11 @@ class BigCard extends Component {
             />
             <CardContent>
               <Typography component="p">
-                <div>Phone: {this.props.selected.display_phone}</div>
-                <div>Distance: {this.convertMiles()} miles</div>
-                <div>Rating: {this.props.selected.rating}</div>
-                <div>Review Count: {this.props.selected.review_count}</div>
-                <div>Address: {address}</div>
+                <span>Phone: {this.props.selected.display_phone}</span><br/>
+                <span>Distance: {this.convertMiles()} miles</span><br/>
+                <span>Rating: {this.props.selected.rating}</span><br/>
+                <span>Review Count: {this.props.selected.review_count}</span><br/>
+                <span>Address: {address}</span><br/>
               </Typography>
             </CardContent>
             <CardActions className={classes.actions} disableActionSpacing>
