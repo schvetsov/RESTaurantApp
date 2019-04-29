@@ -3,6 +3,7 @@ export const GEOLOCATION = 'GEOLOCATION';
 export const YELPRESPONSE = 'YELPRESPONSE';
 export const SELECTED = 'SELECTED';
 export const DIRECTIONS = 'DIRECTIONS';
+export const EXPANDDIRECTIONS = 'EXPANDDIRECTIONS';
 
 export function changeInput(value) {
     return { 
@@ -35,6 +36,13 @@ export function updateSelection(value) {
 export function updateDirections(value) {
     return { 
         type: DIRECTIONS, 
+        value: value
+    }
+};
+
+export function expandDirections(value) {
+    return { 
+        type: EXPANDDIRECTIONS, 
         value: value
     }
 };

@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from 'react-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
-import App from './App';
+import App from './components/App';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';

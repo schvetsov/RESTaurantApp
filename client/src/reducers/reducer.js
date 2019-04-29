@@ -2,7 +2,8 @@ import { CHANGEINPUT,
          GEOLOCATION, 
          YELPRESPONSE, 
          SELECTED, 
-         DIRECTIONS } from '../actions/actions';
+         DIRECTIONS,
+         EXPANDDIRECTIONS } from '../actions/actions';
 
 const initialState = {
     input: '',
@@ -11,38 +12,43 @@ const initialState = {
     result: [],
     selected: '',
     index: 0,
-    directions: []
+    directions: [],
+    expanded: false
 };
 
 const reducer = (state = initialState, action) => {
     switch(action.type) {
-        case "CHANGEINPUT":
+        case CHANGEINPUT:
             return Object.assign({}, state, {
                 input: action.value
             })
-        case "GEOLOCATION":
+        case GEOLOCATION:
             return Object.assign({}, state, {
                 origLat: action.value.value1,
                 origLong: action.value.value2
             })
-        case "YELPRESPONSE":
+        case YELPRESPONSE:
             return Object.assign({}, state, {
                 selected: action.value.selected,
                 result: action.value.data,
                 directions: [ ...action.value.directions]
             })
-        case "SELECTED":
+        case SELECTED:
             return Object.assign({}, state, {
                 selected: action.value.data,
                 index: action.value.index
             })
-        case "DIRECTIONS":
+        case DIRECTIONS:
             return Object.assign({}, state, {
                 directions: [
                     ...action.value.directions.slice(0,action.value.index),
                     action.value.directions[action.value.index] = action.value.directions[action.value.index],
                     ...action.value.directions.slice(action.value.index + 1)
                 ]
+            })
+        case EXPANDDIRECTIONS:
+            return Object.assign({}, state, {
+                expanded: action.value
             })
         default:
             return state;
