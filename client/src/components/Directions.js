@@ -7,7 +7,8 @@ const Directions = (props) => (
                 key={i} 
                 dangerouslySetInnerHTML = {{ 
                     __html: props.directions[props.index][i] 
-                }} />
+                }}
+                data-test='list' />
         )}
     </>
 )

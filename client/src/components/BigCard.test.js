@@ -1,13 +1,13 @@
 import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
-import App from './App';
+import BigCard from './BigCard';
 import Adapter from 'enzyme-adapter-react-16';
 
 Enzyme.configure({ adapter: new Adapter() });
 
-describe('<App />', () => {
+describe('<BigCard />', () => {
     it('renders', () => {
-        const wrapper = shallow(<App />);
+        const wrapper = shallow(<BigCard />);
         expect(wrapper.exists()).toBe(true);
     });
 });

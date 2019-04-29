@@ -17,7 +17,7 @@ const styles = theme => ({
 
 const App = (props) => (
   <>
-    <YELPsearch />
+    <YELPsearch data-test='this-list' />
     <div className={props.classes.root}>
       <GetList />
       <DetailView />

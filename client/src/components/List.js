@@ -16,14 +16,13 @@ const List = (props) => (
             <GridListTile key={i} onClick={() => props.getInfo(i)}>
                 <img src={props.result[i].image_url} alt={""} />
                 <GridListTileBar
-                title={props.result[i].name} 
-                subtitle={props.result[i].categories[0].title}
-                actionIcon={
-                    <IconButton className={props.classes.icon}>
-                    <InfoIcon />
-                    </IconButton>
-                }
-                />
+                    title={props.result[i].name} 
+                    subtitle={props.result[i].categories[0].title}
+                    actionIcon={
+                        <IconButton className={props.classes.icon}>
+                            <InfoIcon />
+                        </IconButton>
+                    } />
             </GridListTile>
         ))}
     </GridList>
