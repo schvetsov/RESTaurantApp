@@ -16,7 +16,7 @@ import FavoriteIcon from '@material-ui/icons/Favorite';
 import ShareIcon from '@material-ui/icons/Share';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import { styles } from './BigCard.styles';
+import { styles } from '../styles/BigCard.styles';
 
 const BigCard = (props) => (   
   <Card className={props.classes.card}>

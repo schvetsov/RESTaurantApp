@@ -6,7 +6,7 @@ import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
 import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/Info';
-import { styles } from './List.styles';
+import { styles } from '../styles/List.styles';
 
 const List = (props) => (   
     <GridList cellHeight={190} className={props.classes.gridList}>

@@ -9,7 +9,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import InputBase from '@material-ui/core/InputBase';
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
-import { styles } from './NavBar.styles';
+import { styles } from '../styles/NavBar.styles';
 
 const NavBar = (props) => (
   <div className={props.classes.root}>
